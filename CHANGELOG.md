@@ -1,272 +1,362 @@
 
-Changelog
-=========
+2.6.9 / 2017-09-22
+==================
 
+  * remove ReDoS regexp in %o formatter (#504)
 
-# 2.x release
+2.6.8 / 2017-05-18
+==================
 
-## v2.6.1
+  * Fix: Check for undefined on browser globals (#462, @marbemac)
 
-**This is an important security release. It is strongly recommended to update as soon as possible.**
+2.6.7 / 2017-05-16
+==================
 
-- Fix: honor the `size` option after following a redirect.
+  * Fix: Update ms to 2.0.0 to fix regular expression denial of service vulnerability (#458, @hubdotcom)
+  * Fix: Inline extend function in node implementation (#452, @dougwilson)
+  * Docs: Fix typo (#455, @msasad)
 
-## v2.6.0
+2.6.5 / 2017-04-27
+==================
+  
+  * Fix: null reference check on window.documentElement.style.WebkitAppearance (#447, @thebigredgeek)
+  * Misc: clean up browser reference checks (#447, @thebigredgeek)
+  * Misc: add npm-debug.log to .gitignore (@thebigredgeek)
 
-- Enhance: `options.agent`, it now accepts a function that returns custom http(s).Agent instance based on current URL, see readme for more information.
-- Fix: incorrect `Content-Length` was returned for stream body in 2.5.0 release; note that `node-fetch` doesn't calculate content length for stream body.
-- Fix: `Response.url` should return empty string instead of `null` by default.
 
-## v2.5.0
+2.6.4 / 2017-04-20
+==================
 
-- Enhance: `Response` object now includes `redirected` property.
-- Enhance: `fetch()` now accepts third-party `Blob` implementation as body.
-- Other: disable `package-lock.json` generation as we never commit them.
-- Other: dev dependency update.
-- Other: readme update.
+  * Fix: bug that would occure if process.env.DEBUG is a non-string value. (#444, @LucianBuzzo)
+  * Chore: ignore bower.json in npm installations. (#437, @joaovieira)
+  * Misc: update "ms" to v0.7.3 (@tootallnate)
 
-## v2.4.1
+2.6.3 / 2017-03-13
+==================
 
-- Fix: `Blob` import rule for node < 10, as `Readable` isn't a named export.
+  * Fix: Electron reference to `process.env.DEBUG` (#431, @paulcbetts)
+  * Docs: Changelog fix (@thebigredgeek)
 
-## v2.4.0
+2.6.2 / 2017-03-10
+==================
 
-- Enhance: added `Brotli` compression support (using node's zlib).
-- Enhance: updated `Blob` implementation per spec.
-- Fix: set content type automatically for `URLSearchParams`.
-- Fix: `Headers` now reject empty header names.
-- Fix: test cases, as node 12+ no longer accepts invalid header response.
+  * Fix: DEBUG_MAX_ARRAY_LENGTH (#420, @slavaGanzin)
+  * Docs: Add backers and sponsors from Open Collective (#422, @piamancini)
+  * Docs: Add Slackin invite badge (@tootallnate)
 
-## v2.3.0
+2.6.1 / 2017-02-10
+==================
 
-- Enhance: added `AbortSignal` support, with README example.
-- Enhance: handle invalid `Location` header during redirect by rejecting them explicitly with `FetchError`.
-- Fix: update `browser.js` to support react-native environment, where `self` isn't available globally.
+  * Fix: Module's `export default` syntax fix for IE8 `Expected identifier` error
+  * Fix: Whitelist DEBUG_FD for values 1 and 2 only (#415, @pi0)
+  * Fix: IE8 "Expected identifier" error (#414, @vgoma)
+  * Fix: Namespaces would not disable once enabled (#409, @musikov)
 
-## v2.2.1
+2.6.0 / 2016-12-28
+==================
 
-- Fix: `compress` flag shouldn't overwrite existing `Accept-Encoding` header.
-- Fix: multiple `import` rules, where `PassThrough` etc. doesn't have a named export when using node <10 and `--exerimental-modules` flag.
-- Other: Better README.
+  * Fix: added better null pointer checks for browser useColors (@thebigredgeek)
+  * Improvement: removed explicit `window.debug` export (#404, @tootallnate)
+  * Improvement: deprecated `DEBUG_FD` environment variable (#405, @tootallnate)
 
-## v2.2.0
+2.5.2 / 2016-12-25
+==================
 
-- Enhance: Support all `ArrayBuffer` view types
-- Enhance: Support Web Workers
-- Enhance: Support Node.js' `--experimental-modules` mode; deprecate `.es.js` file
-- Fix: Add `__esModule` property to the exports object
-- Other: Better example in README for writing response to a file
-- Other: More tests for Agent
+  * Fix: reference error on window within webworkers (#393, @KlausTrainer)
+  * Docs: fixed README typo (#391, @lurch)
+  * Docs: added notice about v3 api discussion (@thebigredgeek)
 
-## v2.1.2
+2.5.1 / 2016-12-20
+==================
 
-- Fix: allow `Body` methods to work on `ArrayBuffer`-backed `Body` objects
-- Fix: reject promise returned by `Body` methods when the accumulated `Buffer` exceeds the maximum size
-- Fix: support custom `Host` headers with any casing
-- Fix: support importing `fetch()` from TypeScript in `browser.js`
-- Fix: handle the redirect response body properly
+  * Fix: babel-core compatibility
 
-## v2.1.1
+2.5.0 / 2016-12-20
+==================
 
-Fix packaging errors in v2.1.0.
+  * Fix: wrong reference in bower file (@thebigredgeek)
+  * Fix: webworker compatibility (@thebigredgeek)
+  * Fix: output formatting issue (#388, @kribblo)
+  * Fix: babel-loader compatibility (#383, @escwald)
+  * Misc: removed built asset from repo and publications (@thebigredgeek)
+  * Misc: moved source files to /src (#378, @yamikuronue)
+  * Test: added karma integration and replaced babel with browserify for browser tests (#378, @yamikuronue)
+  * Test: coveralls integration (#378, @yamikuronue)
+  * Docs: simplified language in the opening paragraph (#373, @yamikuronue)
 
-## v2.1.0
+2.4.5 / 2016-12-17
+==================
 
-- Enhance: allow using ArrayBuffer as the `body` of a `fetch()` or `Request`
-- Fix: store HTTP headers of a `Headers` object internally with the given case, for compatibility with older servers that incorrectly treated header names in a case-sensitive manner
-- Fix: silently ignore invalid HTTP headers
-- Fix: handle HTTP redirect responses without a `Location` header just like non-redirect responses
-- Fix: include bodies when following a redirection when appropriate
+  * Fix: `navigator` undefined in Rhino (#376, @jochenberger)
+  * Fix: custom log function (#379, @hsiliev)
+  * Improvement: bit of cleanup + linting fixes (@thebigredgeek)
+  * Improvement: rm non-maintainted `dist/` dir (#375, @freewil)
+  * Docs: simplified language in the opening paragraph. (#373, @yamikuronue)
 
-## v2.0.0
+2.4.4 / 2016-12-14
+==================
 
-This is a major release. Check [our upgrade guide](https://github.com/bitinn/node-fetch/blob/master/UPGRADE-GUIDE.md) for an overview on some key differences between v1 and v2.
+  * Fix: work around debug being loaded in preload scripts for electron (#368, @paulcbetts)
 
-### General changes
-
-- Major: Node.js 0.10.x and 0.12.x support is dropped
-- Major: `require('node-fetch/lib/response')` etc. is now unsupported; use `require('node-fetch').Response` or ES6 module imports
-- Enhance: start testing on Node.js v4.x, v6.x, v8.x LTS, as well as v9.x stable
-- Enhance: use Rollup to produce a distributed bundle (less memory overhead and faster startup)
-- Enhance: make `Object.prototype.toString()` on Headers, Requests, and Responses return correct class strings
-- Other: rewrite in ES2015 using Babel
-- Other: use Codecov for code coverage tracking
-- Other: update package.json script for npm 5
-- Other: `encoding` module is now optional (alpha.7)
-- Other: expose browser.js through package.json, avoid bundling mishaps (alpha.9)
-- Other: allow TypeScript to `import` node-fetch by exposing default (alpha.9)
-
-### HTTP requests
-
-- Major: overwrite user's `Content-Length` if we can be sure our information is correct (per spec)
-- Fix: errors in a response are caught before the body is accessed
-- Fix: support WHATWG URL objects, created by `whatwg-url` package or `require('url').URL` in Node.js 7+
-
-### Response and Request classes
-
-- Major: `response.text()` no longer attempts to detect encoding, instead always opting for UTF-8 (per spec); use `response.textConverted()` for the v1 behavior
-- Major: make `response.json()` throw error instead of returning an empty object on 204 no-content respose (per spec; reverts behavior changed in v1.6.2)
-- Major: internal methods are no longer exposed
-- Major: throw error when a `GET` or `HEAD` Request is constructed with a non-null body (per spec)
-- Enhance: add `response.arrayBuffer()` (also applies to Requests)
-- Enhance: add experimental `response.blob()` (also applies to Requests)
-- Enhance: `URLSearchParams` is now accepted as a body
-- Enhance: wrap `response.json()` json parsing error as `FetchError`
-- Fix: fix Request and Response with `null` body
-
-### Headers class
-
-- Major: remove `headers.getAll()`; make `get()` return all headers delimited by commas (per spec)
-- Enhance: make Headers iterable
-- Enhance: make Headers constructor accept an array of tuples
-- Enhance: make sure header names and values are valid in HTTP
-- Fix: coerce Headers prototype function parameters to strings, where applicable
-
-### Documentation
-
-- Enhance: more comprehensive API docs
-- Enhance: add a list of default headers in README
-
-
-# 1.x release
-
-## backport releases (v1.7.0 and beyond)
-
-See [changelog on 1.x branch](https://github.com/bitinn/node-fetch/blob/1.x/CHANGELOG.md) for details.
-
-## v1.6.3
-
-- Enhance: error handling document to explain `FetchError` design
-- Fix: support `form-data` 2.x releases (requires `form-data` >= 2.1.0)
-
-## v1.6.2
-
-- Enhance: minor document update
-- Fix: response.json() returns empty object on 204 no-content response instead of throwing a syntax error
-
-## v1.6.1
-
-- Fix: if `res.body` is a non-stream non-formdata object, we will call `body.toString` and send it as a string
-- Fix: `counter` value is incorrectly set to `follow` value when wrapping Request instance
-- Fix: documentation update
-
-## v1.6.0
-
-- Enhance: added `res.buffer()` api for convenience, it returns body as a Node.js buffer
-- Enhance: better old server support by handling raw deflate response
-- Enhance: skip encoding detection for non-HTML/XML response
-- Enhance: minor document update
-- Fix: HEAD request doesn't need decompression, as body is empty
-- Fix: `req.body` now accepts a Node.js buffer
-
-## v1.5.3
-
-- Fix: handle 204 and 304 responses when body is empty but content-encoding is gzip/deflate
-- Fix: allow resolving response and cloned response in any order
-- Fix: avoid setting `content-length` when `form-data` body use streams
-- Fix: send DELETE request with content-length when body is present
-- Fix: allow any url when calling new Request, but still reject non-http(s) url in fetch
-
-## v1.5.2
-
-- Fix: allow node.js core to handle keep-alive connection pool when passing a custom agent
-
-## v1.5.1
-
-- Fix: redirect mode `manual` should work even when there is no redirection or broken redirection
-
-## v1.5.0
-
-- Enhance: rejected promise now use custom `Error` (thx to @pekeler)
-- Enhance: `FetchError` contains `err.type` and `err.code`, allows for better error handling (thx to @pekeler)
-- Enhance: basic support for redirect mode `manual` and `error`, allows for location header extraction (thx to @jimmywarting for the initial PR)
-
-## v1.4.1
-
-- Fix: wrapping Request instance with FormData body again should preserve the body as-is
-
-## v1.4.0
-
-- Enhance: Request and Response now have `clone` method (thx to @kirill-konshin for the initial PR)
-- Enhance: Request and Response now have proper string and buffer body support (thx to @kirill-konshin)
-- Enhance: Body constructor has been refactored out (thx to @kirill-konshin)
-- Enhance: Headers now has `forEach` method (thx to @tricoder42)
-- Enhance: back to 100% code coverage
-- Fix: better form-data support (thx to @item4)
-- Fix: better character encoding detection under chunked encoding (thx to @dsuket for the initial PR)
-
-## v1.3.3
-
-- Fix: make sure `Content-Length` header is set when body is string for POST/PUT/PATCH requests
-- Fix: handle body stream error, for cases such as incorrect `Content-Encoding` header
-- Fix: when following certain redirects, use `GET` on subsequent request per Fetch Spec
-- Fix: `Request` and `Response` constructors now parse headers input using `Headers`
-
-## v1.3.2
-
-- Enhance: allow auto detect of form-data input (no `FormData` spec on node.js, this is form-data specific feature)
-
-## v1.3.1
-
-- Enhance: allow custom host header to be set (server-side only feature, as it's a forbidden header on client-side)
-
-## v1.3.0
-
-- Enhance: now `fetch.Request` is exposed as well
-
-## v1.2.1
-
-- Enhance: `Headers` now normalized `Number` value to `String`, prevent common mistakes
-
-## v1.2.0
-
-- Enhance: now fetch.Headers and fetch.Response are exposed, making testing easier
-
-## v1.1.2
-
-- Fix: `Headers` should only support `String` and `Array` properties, and ignore others
-
-## v1.1.1
-
-- Enhance: now req.headers accept both plain object and `Headers` instance
-
-## v1.1.0
-
-- Enhance: timeout now also applies to response body (in case of slow response)
-- Fix: timeout is now cleared properly when fetch is done/has failed
-
-## v1.0.6
-
-- Fix: less greedy content-type charset matching
-
-## v1.0.5
-
-- Fix: when `follow = 0`, fetch should not follow redirect
-- Enhance: update tests for better coverage
-- Enhance: code formatting
-- Enhance: clean up doc
-
-## v1.0.4
-
-- Enhance: test iojs support
-- Enhance: timeout attached to socket event only fire once per redirect
-
-## v1.0.3
-
-- Fix: response size limit should reject large chunk
-- Enhance: added character encoding detection for xml, such as rss/atom feed (encoding in DTD)
-
-## v1.0.2
-
-- Fix: added res.ok per spec change
-
-## v1.0.0
-
-- Enhance: better test coverage and doc
-
-
-# 0.x release
-
-## v0.1
-
-- Major: initial public release
+2.4.3 / 2016-12-14
+==================
+
+  * Fix: navigation.userAgent error for react native (#364, @escwald)
+
+2.4.2 / 2016-12-14
+==================
+
+  * Fix: browser colors (#367, @tootallnate)
+  * Misc: travis ci integration (@thebigredgeek)
+  * Misc: added linting and testing boilerplate with sanity check (@thebigredgeek)
+
+2.4.1 / 2016-12-13
+==================
+
+  * Fix: typo that broke the package (#356)
+
+2.4.0 / 2016-12-13
+==================
+
+  * Fix: bower.json references unbuilt src entry point (#342, @justmatt)
+  * Fix: revert "handle regex special characters" (@tootallnate)
+  * Feature: configurable util.inspect()`options for NodeJS (#327, @tootallnate)
+  * Feature: %O`(big O) pretty-prints objects (#322, @tootallnate)
+  * Improvement: allow colors in workers (#335, @botverse)
+  * Improvement: use same color for same namespace. (#338, @lchenay)
+
+2.3.3 / 2016-11-09
+==================
+
+  * Fix: Catch `JSON.stringify()` errors (#195, Jovan Alleyne)
+  * Fix: Returning `localStorage` saved values (#331, Levi Thomason)
+  * Improvement: Don't create an empty object when no `process` (Nathan Rajlich)
+
+2.3.2 / 2016-11-09
+==================
+
+  * Fix: be super-safe in index.js as well (@TooTallNate)
+  * Fix: should check whether process exists (Tom Newby)
+
+2.3.1 / 2016-11-09
+==================
+
+  * Fix: Added electron compatibility (#324, @paulcbetts)
+  * Improvement: Added performance optimizations (@tootallnate)
+  * Readme: Corrected PowerShell environment variable example (#252, @gimre)
+  * Misc: Removed yarn lock file from source control (#321, @fengmk2)
+
+2.3.0 / 2016-11-07
+==================
+
+  * Fix: Consistent placement of ms diff at end of output (#215, @gorangajic)
+  * Fix: Escaping of regex special characters in namespace strings (#250, @zacronos)
+  * Fix: Fixed bug causing crash on react-native (#282, @vkarpov15)
+  * Feature: Enabled ES6+ compatible import via default export (#212 @bucaran)
+  * Feature: Added %O formatter to reflect Chrome's console.log capability (#279, @oncletom)
+  * Package: Update "ms" to 0.7.2 (#315, @DevSide)
+  * Package: removed superfluous version property from bower.json (#207 @kkirsche)
+  * Readme: fix USE_COLORS to DEBUG_COLORS
+  * Readme: Doc fixes for format string sugar (#269, @mlucool)
+  * Readme: Updated docs for DEBUG_FD and DEBUG_COLORS environment variables (#232, @mattlyons0)
+  * Readme: doc fixes for PowerShell (#271 #243, @exoticknight @unreadable)
+  * Readme: better docs for browser support (#224, @matthewmueller)
+  * Tooling: Added yarn integration for development (#317, @thebigredgeek)
+  * Misc: Renamed History.md to CHANGELOG.md (@thebigredgeek)
+  * Misc: Added license file (#226 #274, @CantemoInternal @sdaitzman)
+  * Misc: Updated contributors (@thebigredgeek)
+
+2.2.0 / 2015-05-09
+==================
+
+  * package: update "ms" to v0.7.1 (#202, @dougwilson)
+  * README: add logging to file example (#193, @DanielOchoa)
+  * README: fixed a typo (#191, @amir-s)
+  * browser: expose `storage` (#190, @stephenmathieson)
+  * Makefile: add a `distclean` target (#189, @stephenmathieson)
+
+2.1.3 / 2015-03-13
+==================
+
+  * Updated stdout/stderr example (#186)
+  * Updated example/stdout.js to match debug current behaviour
+  * Renamed example/stderr.js to stdout.js
+  * Update Readme.md (#184)
+  * replace high intensity foreground color for bold (#182, #183)
+
+2.1.2 / 2015-03-01
+==================
+
+  * dist: recompile
+  * update "ms" to v0.7.0
+  * package: update "browserify" to v9.0.3
+  * component: fix "ms.js" repo location
+  * changed bower package name
+  * updated documentation about using debug in a browser
+  * fix: security error on safari (#167, #168, @yields)
+
+2.1.1 / 2014-12-29
+==================
+
+  * browser: use `typeof` to check for `console` existence
+  * browser: check for `console.log` truthiness (fix IE 8/9)
+  * browser: add support for Chrome apps
+  * Readme: added Windows usage remarks
+  * Add `bower.json` to properly support bower install
+
+2.1.0 / 2014-10-15
+==================
+
+  * node: implement `DEBUG_FD` env variable support
+  * package: update "browserify" to v6.1.0
+  * package: add "license" field to package.json (#135, @panuhorsmalahti)
+
+2.0.0 / 2014-09-01
+==================
+
+  * package: update "browserify" to v5.11.0
+  * node: use stderr rather than stdout for logging (#29, @stephenmathieson)
+
+1.0.4 / 2014-07-15
+==================
+
+  * dist: recompile
+  * example: remove `console.info()` log usage
+  * example: add "Content-Type" UTF-8 header to browser example
+  * browser: place %c marker after the space character
+  * browser: reset the "content" color via `color: inherit`
+  * browser: add colors support for Firefox >= v31
+  * debug: prefer an instance `log()` function over the global one (#119)
+  * Readme: update documentation about styled console logs for FF v31 (#116, @wryk)
+
+1.0.3 / 2014-07-09
+==================
+
+  * Add support for multiple wildcards in namespaces (#122, @seegno)
+  * browser: fix lint
+
+1.0.2 / 2014-06-10
+==================
+
+  * browser: update color palette (#113, @gscottolson)
+  * common: make console logging function configurable (#108, @timoxley)
+  * node: fix %o colors on old node <= 0.8.x
+  * Makefile: find node path using shell/which (#109, @timoxley)
+
+1.0.1 / 2014-06-06
+==================
+
+  * browser: use `removeItem()` to clear localStorage
+  * browser, node: don't set DEBUG if namespaces is undefined (#107, @leedm777)
+  * package: add "contributors" section
+  * node: fix comment typo
+  * README: list authors
+
+1.0.0 / 2014-06-04
+==================
+
+  * make ms diff be global, not be scope
+  * debug: ignore empty strings in enable()
+  * node: make DEBUG_COLORS able to disable coloring
+  * *: export the `colors` array
+  * npmignore: don't publish the `dist` dir
+  * Makefile: refactor to use browserify
+  * package: add "browserify" as a dev dependency
+  * Readme: add Web Inspector Colors section
+  * node: reset terminal color for the debug content
+  * node: map "%o" to `util.inspect()`
+  * browser: map "%j" to `JSON.stringify()`
+  * debug: add custom "formatters"
+  * debug: use "ms" module for humanizing the diff
+  * Readme: add "bash" syntax highlighting
+  * browser: add Firebug color support
+  * browser: add colors for WebKit browsers
+  * node: apply log to `console`
+  * rewrite: abstract common logic for Node & browsers
+  * add .jshintrc file
+
+0.8.1 / 2014-04-14
+==================
+
+  * package: re-add the "component" section
+
+0.8.0 / 2014-03-30
+==================
+
+  * add `enable()` method for nodejs. Closes #27
+  * change from stderr to stdout
+  * remove unnecessary index.js file
+
+0.7.4 / 2013-11-13
+==================
+
+  * remove "browserify" key from package.json (fixes something in browserify)
+
+0.7.3 / 2013-10-30
+==================
+
+  * fix: catch localStorage security error when cookies are blocked (Chrome)
+  * add debug(err) support. Closes #46
+  * add .browser prop to package.json. Closes #42
+
+0.7.2 / 2013-02-06
+==================
+
+  * fix package.json
+  * fix: Mobile Safari (private mode) is broken with debug
+  * fix: Use unicode to send escape character to shell instead of octal to work with strict mode javascript
+
+0.7.1 / 2013-02-05
+==================
+
+  * add repository URL to package.json
+  * add DEBUG_COLORED to force colored output
+  * add browserify support
+  * fix component. Closes #24
+
+0.7.0 / 2012-05-04
+==================
+
+  * Added .component to package.json
+  * Added debug.component.js build
+
+0.6.0 / 2012-03-16
+==================
+
+  * Added support for "-" prefix in DEBUG [Vinay Pulim]
+  * Added `.enabled` flag to the node version [TooTallNate]
+
+0.5.0 / 2012-02-02
+==================
+
+  * Added: humanize diffs. Closes #8
+  * Added `debug.disable()` to the CS variant
+  * Removed padding. Closes #10
+  * Fixed: persist client-side variant again. Closes #9
+
+0.4.0 / 2012-02-01
+==================
+
+  * Added browser variant support for older browsers [TooTallNate]
+  * Added `debug.enable('project:*')` to browser variant [TooTallNate]
+  * Added padding to diff (moved it to the right)
+
+0.3.0 / 2012-01-26
+==================
+
+  * Added millisecond diff when isatty, otherwise UTC string
+
+0.2.0 / 2012-01-22
+==================
+
+  * Added wildcard support
+
+0.1.0 / 2011-12-02
+==================
+
+  * Added: remove colors unless stderr isatty [TooTallNate]
+
+0.0.1 / 2010-01-03
+==================
+
+  * Initial release

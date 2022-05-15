@@ -1,70 +1,27 @@
-# has-flag [![Build Status](https://travis-ci.org/sindresorhus/has-flag.svg?branch=master)](https://travis-ci.org/sindresorhus/has-flag)
+# escape-string-regexp [![Build Status](https://travis-ci.org/sindresorhus/escape-string-regexp.svg?branch=master)](https://travis-ci.org/sindresorhus/escape-string-regexp)
 
-> Check if [`argv`](https://nodejs.org/docs/latest/api/process.html#process_process_argv) has a specific flag
-
-Correctly stops looking after an `--` argument terminator.
+> Escape RegExp special characters
 
 
 ## Install
 
 ```
-$ npm install has-flag
+$ npm install --save escape-string-regexp
 ```
 
 
 ## Usage
 
 ```js
-// foo.js
-const hasFlag = require('has-flag');
+const escapeStringRegexp = require('escape-string-regexp');
 
-hasFlag('unicorn');
-//=> true
+const escapedString = escapeStringRegexp('how much $ for a unicorn?');
+//=> 'how much \$ for a unicorn\?'
 
-hasFlag('--unicorn');
-//=> true
-
-hasFlag('f');
-//=> true
-
-hasFlag('-f');
-//=> true
-
-hasFlag('foo=bar');
-//=> true
-
-hasFlag('foo');
-//=> false
-
-hasFlag('rainbow');
-//=> false
+new RegExp(escapedString);
 ```
-
-```
-$ node foo.js -f --unicorn --foo=bar -- --rainbow
-```
-
-
-## API
-
-### hasFlag(flag, [argv])
-
-Returns a boolean for whether the flag exists.
-
-#### flag
-
-Type: `string`
-
-CLI flag to look for. The `--` prefix is optional.
-
-#### argv
-
-Type: `string[]`<br>
-Default: `process.argv`
-
-CLI arguments.
 
 
 ## License
 
-MIT © [Sindre Sorhus](https://sindresorhus.com)
+MIT © [Sindre Sorhus](http://sindresorhus.com)

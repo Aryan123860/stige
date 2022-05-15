@@ -1,54 +1,59 @@
-// Type definitions for filelist v0.0.6
-// Project: https://github.com/mde/filelist
-// Definitions by: Christophe MASSOLIN <https://github.com/FuriouZz>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 3.0
+/// <reference types="node" />
 
-declare module "filelist" {
-  export class FileList {
-    pendingAdd: string[]
-    pending: boolean
-    excludes: {
-      pats: RegExp[],
-      funcs: Function[],
-      regex: null | RegExp
-    }
-    items: string[]
-    static clone(): FileList
-    static verbose: boolean
-    toArray(): string[]
-    include(options: any, ...items: string[]): void
-    exclude(...items: string[]): void
-    resolve(): void
-    clearInclusions(): void
-    clearExclusions(): void
-    length(): number
-    toString(): string;
-    toLocaleString(): string;
-    push(...items: string[]): number;
-    pop(): string | undefined;
-    concat(...items: ReadonlyArray<string>[]): string[];
-    concat(...items: (string | ReadonlyArray<string>)[]): string[];
-    join(separator?: string): string;
-    reverse(): string[];
-    shift(): string | undefined;
-    slice(start?: number, end?: number): string[];
-    sort(compareFn?: (a: string, b: string) => number): this;
-    splice(start: number, deleteCount?: number): string[];
-    splice(start: number, deleteCount: number, ...items: string[]): string[];
-    unshift(...items: string[]): number;
-    indexOf(searchElement: string, fromIndex?: number): number;
-    lastIndexOf(searchElement: string, fromIndex?: number): number;
-    every(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
-    some(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
-    forEach(callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any): void;
-    map<U>(callbackfn: (value: string, index: number, array: string[]) => U, thisArg?: any): U[];
-    filter<S extends string>(callbackfn: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
-    filter(callbackfn: (value: string, index: number, array: string[]) => any, thisArg?: any): string[];
-    reduce(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-    reduce(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-    reduce<U>(callbackfn: (previousValue: U, currentValue: string, currentIndex: number, array: string[]) => U, initialValue: U): U;
-    reduceRight(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
-    reduceRight(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
-    reduceRight<U>(callbackfn: (previousValue: U, currentValue: string, currentIndex: number, array: string[]) => U, initialValue: U): U;
-  }
+export interface DotenvParseOptions {
+  /**
+   * You may turn on logging to help debug why certain keys or values are not being set as you expect.
+   */
+  debug?: boolean;
 }
+
+export interface DotenvParseOutput {
+  [name: string]: string;
+}
+
+/**
+ * Parses a string or buffer in the .env file format into an object.
+ *
+ * @param src - contents to be parsed
+ * @param options - additional options
+ * @returns an object with keys and values based on `src`
+ */
+export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
+  src: string | Buffer,
+  options?: DotenvParseOptions
+): T;
+
+export interface DotenvConfigOptions {
+  /**
+   * You may specify a custom path if your file containing environment variables is located elsewhere.
+   */
+  path?: string;
+
+  /**
+   * You may specify the encoding of your file containing environment variables.
+   */
+  encoding?: string;
+
+  /**
+   * You may turn on logging to help debug why certain keys or values are not being set as you expect.
+   */
+  debug?: boolean;
+}
+
+export interface DotenvConfigOutput {
+  error?: Error;
+  parsed?: DotenvParseOutput;
+}
+
+/**
+ * Loads `.env` file contents into {@link https://nodejs.org/api/process.html#process_process_env `process.env`}.
+ * Example: 'KEY=value' becomes { parsed: { KEY: 'value' } }
+ *
+ * @param options - controls behavior
+ * @returns an object with a `parsed` key if successful or `error` key if an error occurred
+ *
+ */
+export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
+/** @deprecated since v7.0.0 Use config instead. */
+export const load: typeof config;
