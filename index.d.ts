@@ -1,87 +1,54 @@
-import { Readable } from 'stream';
+// Type definitions for filelist v0.0.6
+// Project: https://github.com/mde/filelist
+// Definitions by: Christophe MASSOLIN <https://github.com/FuriouZz>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare namespace getRawBody {
-  export type Encoding = string | true;
-
-  export interface Options {
-    /**
-     * The expected length of the stream.
-     */
-    length?: number | string | null;
-    /**
-     * The byte limit of the body. This is the number of bytes or any string
-     * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`.
-     */
-    limit?: number | string | null;
-    /**
-     * The encoding to use to decode the body into a string. By default, a
-     * `Buffer` instance will be returned when no encoding is specified. Most
-     * likely, you want `utf-8`, so setting encoding to `true` will decode as
-     * `utf-8`. You can use any type of encoding supported by `iconv-lite`.
-     */
-    encoding?: Encoding | null;
-  }
-
-  export interface RawBodyError extends Error {
-    /**
-     * The limit in bytes.
-     */
-    limit?: number;
-    /**
-     * The expected length of the stream.
-     */
-    length?: number;
-    expected?: number;
-    /**
-     * The received bytes.
-     */
-    received?: number;
-    /**
-     * The encoding.
-     */
-    encoding?: string;
-    /**
-     * The corresponding status code for the error.
-     */
-    status: number;
-    statusCode: number;
-    /**
-     * The error type.
-     */
-    type: string;
+declare module "filelist" {
+  export class FileList {
+    pendingAdd: string[]
+    pending: boolean
+    excludes: {
+      pats: RegExp[],
+      funcs: Function[],
+      regex: null | RegExp
+    }
+    items: string[]
+    static clone(): FileList
+    static verbose: boolean
+    toArray(): string[]
+    include(options: any, ...items: string[]): void
+    exclude(...items: string[]): void
+    resolve(): void
+    clearInclusions(): void
+    clearExclusions(): void
+    length(): number
+    toString(): string;
+    toLocaleString(): string;
+    push(...items: string[]): number;
+    pop(): string | undefined;
+    concat(...items: ReadonlyArray<string>[]): string[];
+    concat(...items: (string | ReadonlyArray<string>)[]): string[];
+    join(separator?: string): string;
+    reverse(): string[];
+    shift(): string | undefined;
+    slice(start?: number, end?: number): string[];
+    sort(compareFn?: (a: string, b: string) => number): this;
+    splice(start: number, deleteCount?: number): string[];
+    splice(start: number, deleteCount: number, ...items: string[]): string[];
+    unshift(...items: string[]): number;
+    indexOf(searchElement: string, fromIndex?: number): number;
+    lastIndexOf(searchElement: string, fromIndex?: number): number;
+    every(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
+    some(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
+    forEach(callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any): void;
+    map<U>(callbackfn: (value: string, index: number, array: string[]) => U, thisArg?: any): U[];
+    filter<S extends string>(callbackfn: (value: string, index: number, array: string[]) => value is S, thisArg?: any): S[];
+    filter(callbackfn: (value: string, index: number, array: string[]) => any, thisArg?: any): string[];
+    reduce(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
+    reduce(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
+    reduce<U>(callbackfn: (previousValue: U, currentValue: string, currentIndex: number, array: string[]) => U, initialValue: U): U;
+    reduceRight(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string): string;
+    reduceRight(callbackfn: (previousValue: string, currentValue: string, currentIndex: number, array: string[]) => string, initialValue: string): string;
+    reduceRight<U>(callbackfn: (previousValue: U, currentValue: string, currentIndex: number, array: string[]) => U, initialValue: U): U;
   }
 }
-
-/**
- * Gets the entire buffer of a stream either as a `Buffer` or a string.
- * Validates the stream's length against an expected length and maximum
- * limit. Ideal for parsing request bodies.
- */
-declare function getRawBody(
-  stream: Readable,
-  callback: (err: getRawBody.RawBodyError, body: Buffer) => void
-): void;
-
-declare function getRawBody(
-  stream: Readable,
-  options: (getRawBody.Options & { encoding: getRawBody.Encoding }) | getRawBody.Encoding,
-  callback: (err: getRawBody.RawBodyError, body: string) => void
-): void;
-
-declare function getRawBody(
-  stream: Readable,
-  options: getRawBody.Options,
-  callback: (err: getRawBody.RawBodyError, body: Buffer) => void
-): void;
-
-declare function getRawBody(
-  stream: Readable,
-  options: (getRawBody.Options & { encoding: getRawBody.Encoding }) | getRawBody.Encoding
-): Promise<string>;
-
-declare function getRawBody(
-  stream: Readable,
-  options?: getRawBody.Options
-): Promise<Buffer>;
-
-export = getRawBody;

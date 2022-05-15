@@ -1,216 +1,311 @@
-/*
- * Jake JavaScript build tool
- * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
-*/
-
-const PROJECT_DIR = process.env.PROJECT_DIR;
-
-let assert = require('assert');
-let exec = require('child_process').execSync;
+let path = require('path');
 let fs = require('fs');
-let { Rule } = require(`${PROJECT_DIR}/lib/rule`);
-let { rmRf } = require(`${PROJECT_DIR}/lib/jake`);
+let Task = require('./task/task').Task;
 
-let cleanUpAndNext = function (callback) {
-  // Gotta add globbing to file utils rmRf
-  let tmpFiles = [
-    'tmp'
-    , 'tmp_ns'
-    , 'tmp_cr'
-    , 'tmp_p'
-    , 'tmp_pf'
-    , 'tmpbin'
-    , 'tmpsrc'
-    , 'tmp_dep1.c'
-    , 'tmp_dep1.o'
-    , 'tmp_dep1.oo'
-    , 'tmp_dep2.c'
-    , 'tmp_dep2.o'
-    , 'tmp_dep2.oo'
-    , 'foo'
-    , 'foo.html'
-  ];
-  tmpFiles.forEach(function (f) {
-    rmRf(f, {
-      silent: true
+// Split a task to two parts, name space and task name.
+// For example, given 'foo:bin/a%.c', return an object with
+// - 'ns'     : foo
+// - 'name'   : bin/a%.c
+function splitNs(task) {
+  let parts = task.split(':');
+  let name = parts.pop();
+  let ns = resolveNs(parts);
+  return {
+    'name' : name,
+    'ns'   : ns
+  };
+}
+
+// Return the namespace based on an array of names.
+// For example, given ['foo', 'baz' ], return the namespace
+//
+//   default -> foo -> baz
+//
+// where default is the global root namespace
+// and -> means child namespace.
+function resolveNs(parts) {
+  let  ns = jake.defaultNamespace;
+  for(let i = 0, l = parts.length; ns && i < l; i++) {
+    ns = ns.childNamespaces[parts[i]];
+  }
+  return ns;
+}
+
+// Given a pattern p, say 'foo:bin/a%.c'
+// Return an object with
+// - 'ns'     : foo
+// - 'dir'    : bin
+// - 'prefix' : a
+// - 'suffix' : .c
+function resolve(p) {
+  let task = splitNs(p);
+  let name  = task.name;
+  let ns    = task.ns;
+  let split = path.basename(name).split('%');
+  return {
+    ns: ns,
+    dir: path.dirname(name),
+    prefix: split[0],
+    suffix: split[1]
+  };
+}
+
+// Test whether string a is a suffix of string b
+function stringEndWith(a, b) {
+  let l;
+  return (l = b.lastIndexOf(a)) == -1 ? false : l + a.length == b.length;
+}
+
+// Replace the suffix a of the string s with b.
+// Note that, it is assumed a is a suffix of s.
+function stringReplaceSuffix(s, a, b) {
+  return s.slice(0, s.lastIndexOf(a)) + b;
+}
+
+class Rule {
+  constructor(opts) {
+    this.pattern = opts.pattern;
+    this.source = opts.source;
+    this.prereqs = opts.prereqs;
+    this.action = opts.action;
+    this.opts = opts.opts;
+    this.desc =  opts.desc;
+    this.ns = opts.ns;
+  }
+
+  // Create a file task based on this rule for the specified
+  // task-name
+  // ======
+  // FIXME: Right now this just throws away any passed-in args
+  // for the synthsized task (taskArgs param)
+  // ======
+  createTask(fullName, level) {
+    let self = this;
+    let pattern;
+    let source;
+    let action;
+    let opts;
+    let prereqs;
+    let valid;
+    let src;
+    let tNs;
+    let createdTask;
+    let name = Task.getBaseTaskName(fullName);
+    let nsPath = Task.getBaseNamespacePath(fullName);
+    let ns = this.ns.resolveNamespace(nsPath);
+
+    pattern = this.pattern;
+    source = this.source;
+
+    if (typeof source == 'string') {
+      src = Rule.getSource(name, pattern, source);
+    }
+    else {
+      src = source(name);
+    }
+
+    // TODO: Write a utility function that appends a
+    // taskname to a namespace path
+    src = nsPath.split(':').filter(function (item) {
+      return !!item;
+    }).concat(src).join(':');
+
+    // Generate the prerequisite for the matching task.
+    //    It is the original prerequisites plus the prerequisite
+    //    representing source file, i.e.,
+    //
+    //      rule( '%.o', '%.c', ['some.h'] ...
+    //
+    //    If the objective is main.o, then new task should be
+    //
+    //      file( 'main.o', ['main.c', 'some.h' ] ...
+    prereqs = this.prereqs.slice(); // Get a copy to work with
+    prereqs.unshift(src);
+
+    // Prereq should be:
+    // 1. an existing task
+    // 2. an existing file on disk
+    // 3. a valid rule (i.e., not at too deep a level)
+    valid = prereqs.some(function (p) {
+      let ns = self.ns;
+      return ns.resolveTask(p) ||
+        fs.existsSync(Task.getBaseTaskName(p)) ||
+        jake.attemptRule(p, ns, level + 1);
     });
-  });
-  callback && callback();
-};
 
-suite('rule', function () {
+    // If any of the prereqs aren't valid, the rule isn't valid
+    if (!valid) {
+      return null;
+    }
+    // Otherwise, hunky-dory, finish creating the task for the rule
+    else {
+      // Create the action for the task
+      action = function () {
+        let task = this;
+        self.action.apply(task);
+      };
 
-  this.timeout(7000);
+      opts = this.opts;
 
-  setup(function (next) {
-    cleanUpAndNext(next);
-  });
+      // Insert the file task into Jake
+      //
+      // Since createTask function stores the task as a child task
+      // of currentNamespace. Here we temporariliy switch the namespace.
+      // FIXME: Should allow optional ns passed in instead of this hack
+      tNs = jake.currentNamespace;
+      jake.currentNamespace = ns;
+      createdTask = jake.createTask('file', name, prereqs, action, opts);
+      createdTask.source = src.split(':').pop();
+      jake.currentNamespace = tNs;
 
+      return createdTask;
+    }
+  }
 
+  match(name) {
+    return Rule.match(this.pattern, name);
+  }
+
+  // Test wether the a prerequisite matchs the pattern.
+  // The arg 'pattern' does not have namespace as prefix.
+  // For example, the following tests are true
+  //
+  //   pattern      |    name
+  //   bin/%.o      |    bin/main.o
+  //   bin/%.o      |    foo:bin/main.o
+  //
+  // The following tests are false (trivally)
+  //
+  //   pattern      |    name
+  //   bin/%.o      |    foobin/main.o
+  //   bin/%.o      |    bin/main.oo
+  static match(pattern, name) {
+    let p;
+    let task;
+    let obj;
+    let filename;
+
+    if (pattern instanceof RegExp) {
+      return pattern.test(name);
+    }
+    else if (pattern.indexOf('%') == -1) {
+      // No Pattern. No Folder. No Namespace.
+      // A Simple Suffix Rule. Just test suffix
+      return stringEndWith(pattern, name);
+    }
+    else {
+      // Resolve the dir, prefix and suffix of pattern
+      p = resolve(pattern);
+
+      // Resolve the namespace and task-name
+      task = splitNs(name);
+      name = task.name;
+
+      // Set the objective as the task-name
+      obj = name;
+
+      // Namespace is already matched.
+
+      // Check dir
+      if (path.dirname(obj) != p.dir) {
+        return false;
+      }
+
+      filename = path.basename(obj);
+
+      // Check file name length
+      if ((p.prefix.length + p.suffix.length + 1) > filename.length) {
+        // Length does not match.
+        return false;
+      }
+
+      // Check prefix
+      if (filename.indexOf(p.prefix) !== 0) {
+        return false;
+      }
+
+      // Check suffix
+      if (!stringEndWith(p.suffix, filename)) {
+        return false;
+      }
+
+      // OK. Find a match.
+      return true;
+    }
+  }
+
+  // Generate the source based on
+  //  - name    name for the synthesized task
+  //  - pattern    pattern for the objective
+  //  - source    pattern for the source
+  //
+  // Return the source with properties
+  //  - dep      the prerequisite of source
+  //             (with the namespace)
+  //
+  //  - file     the file name of source
+  //             (without the namespace)
+  //
+  // For example, given
+  //
   //  - name   foo:bin/main.o
   //  - pattern    bin/%.o
   //  - source    src/%.c
   //
-  // return {
-  //    'dep' : 'foo:src/main.c',
-  //    'file': 'src/main.c'
-  //  };
-  test('Rule.getSource', function () {
-    let src = Rule.getSource('foo:bin/main.o', 'bin/%.o', 'src/%.c');
-    assert.equal('foo:src/main.c', src);
-  });
+  //    return 'foo:src/main.c',
+  //
+  static getSource(name, pattern, source) {
+    let dep;
+    let pat;
+    let match;
+    let file;
+    let src;
 
-  test('rule w/o pattern', function () {
-    let out = exec( './node_modules/.bin/jake -q  tmp').toString().trim();
-    let output = [
-      "tmp_dep2.c task"
-      , "tmp_dep1.c task"
-      , "cp tmp_dep1.c tmp_dep1.o task"
-      , "cp tmp_dep2.c tmp_dep2.o task"
-      , "tmp task"];
-    assert.equal( output.join('\n'), out);
-    let data = fs.readFileSync(process.cwd() + '/tmp');
-    assert.equal('src_1src_2', data.toString());
-    cleanUpAndNext();
-  });
-
-  test('rule w pattern w/o folder w/o namespace', function () {
-    let out = exec( './node_modules/.bin/jake  -q  tmp_p').toString().trim();
-    let output = [
-      "tmp_dep2.c task"
-      , "tmp_dep1.c task"
-      , "cp tmp_dep1.c tmp_dep1.oo task"
-      , "cp tmp_dep2.c tmp_dep2.oo task"
-      , "tmp pattern task"];
-    let data;
-    assert.equal( output.join('\n'), out);
-    data = fs.readFileSync(process.cwd() + '/tmp_p');
-    assert.equal('src_1src_2 pattern', data.toString());
-    cleanUpAndNext();
-  });
-
-  test('rule w pattern w folder w/o namespace', function () {
-    let out = exec( './node_modules/.bin/jake  -q  tmp_pf').toString().trim();
-    let output = [
-      "tmpsrc/tmp_dep1.c task"
-      , "cp tmpsrc/tmp_dep1.c tmpbin/tmp_dep1.oo task"
-      , "tmpsrc/tmp_dep2.c task"
-      , "cp tmpsrc/tmp_dep2.c tmpbin/tmp_dep2.oo task"
-      , "tmp pattern folder task"];
-    let data;
-    assert.equal( output.join('\n'), out);
-    data = fs.readFileSync(process.cwd() + '/tmp_pf');
-    assert.equal('src/src_1src/src_2 pattern folder', data.toString());
-    cleanUpAndNext();
-  });
-
-  test.skip('rule w pattern w folder w namespace', function () {
-    let out = exec( './node_modules/.bin/jake -q   tmp_ns').toString().trim();
-    let output = [
-      "tmpsrc/file2.c init task" // yes
-      , "tmpsrc/tmp_dep2.c task" // no
-      , "cp tmpsrc/tmp_dep2.c tmpbin/tmp_dep2.oo task" // no
-      , "tmpsrc/dep1.c task" // no
-      , "cp tmpsrc/dep1.c tmpbin/dep1.oo ns task" // no
-      , "cp tmpsrc/file2.c tmpbin/file2.oo ns task" // yes
-      , "tmp pattern folder namespace task"]; // yes
-    let data;
-    assert.equal( output.join('\n'), out);
-    data = fs.readFileSync(process.cwd() + '/tmp_ns');
-    assert.equal('src/src_1src/src_2src/src_3 pattern folder namespace', data.toString());
-    cleanUpAndNext();
-  });
-
-  test.skip('rule w chain w pattern w folder w namespace', function () {
-    let out = exec( './node_modules/.bin/jake -q tmp_cr').toString().trim();
-    let output = [
-      "chainrule init task"
-      , "cp tmpsrc/file1.tex tmpbin/file1.dvi tex->dvi task"
-      , "cp tmpbin/file1.dvi tmpbin/file1.pdf dvi->pdf task"
-      , "cp tmpsrc/file2.tex tmpbin/file2.dvi tex->dvi task"
-      , "cp tmpbin/file2.dvi tmpbin/file2.pdf dvi->pdf task"
-      , "tmp chainrule namespace task"];
-    let data;
-    assert.equal( output.join('\n'), out);
-    data = fs.readFileSync(process.cwd() + '/tmp_cr');
-    assert.equal('tex1 tex2  chainrule namespace', data.toString());
-    cleanUpAndNext();
-  });
-
-
-  ['precedence', 'regexPattern', 'sourceFunction'].forEach(function (key) {
-
-    test('rule with source file not created yet (' + key  + ')', function () {
-      let write = process.stderr.write;
-      process.stderr.write = () => {};
-      rmRf('foo.txt', {silent: true});
-      rmRf('foo.html', {silent: true});
-      try {
-        exec('./node_modules/.bin/jake  ' + key + ':test');
+    // Regex pattern -- use to look up the extension
+    if (pattern instanceof RegExp) {
+      match = pattern.exec(name);
+      if (match) {
+        if (typeof source == 'function') {
+          src = source(name);
+        }
+        else {
+          src = stringReplaceSuffix(name, match[0], source);
+        }
       }
-      catch(err) {
-        // foo.txt prereq doesn't exist yet
-        assert.ok(err.message.indexOf('Unknown task "foo.html"') > -1);
+    }
+    // Assume string
+    else {
+      // Simple string suffix replacement
+      if (pattern.indexOf('%') == -1) {
+        if (typeof source == 'function') {
+          src = source(name);
+        }
+        else {
+          src = stringReplaceSuffix(name, pattern, source);
+        }
       }
-      process.stderr.write = write;
-    });
+      // Percent-based substitution
+      else {
+        pat = pattern.replace('%', '(.*?)');
+        pat = new RegExp(pat);
+        match = pat.exec(name);
+        if (match) {
+          if (typeof source == 'function') {
+            src = source(name);
+          }
+          else {
+            file = match[1];
+            file = source.replace('%', file);
+            dep = match[0];
+            src = name.replace(dep, file);
+          }
+        }
+      }
+    }
 
-    test('rule with source file now created (' + key  + ')', function () {
-      fs.writeFileSync('foo.txt', '');
-      let out = exec('./node_modules/.bin/jake -q  ' + key + ':test').toString().trim();
-      // Should run prereq and test task
-      let output = [
-        'created html'
-        , 'ran test'
-      ];
-      assert.equal(output.join('\n'), out);
-    });
-
-    test('rule with source file modified (' + key  + ')', function (next) {
-      setTimeout(function () {
-        fs.writeFileSync('foo.txt', '');
-        let out = exec('./node_modules/.bin/jake -q  ' + key + ':test').toString().trim();
-        // Should again run both prereq and test task
-        let output = [
-          'created html'
-          , 'ran test'
-        ];
-        assert.equal(output.join('\n'), out);
-        //next();
-        cleanUpAndNext(next);
-      }, 1000); // Wait to do the touch to ensure mod-time is different
-    });
-
-    test('rule with existing objective file and no source ' +
-        ' (should be normal file-task) (' + key  + ')', function () {
-      // Remove just the source file
-      fs.writeFileSync('foo.html', '');
-      rmRf('foo.txt', {silent: true});
-      let out = exec('./node_modules/.bin/jake -q  ' + key + ':test').toString().trim();
-      // Should treat existing objective file as plain file-task,
-      // and just run test-task
-      let output = [
-        'ran test'
-      ];
-      assert.equal(output.join('\n'), out);
-      cleanUpAndNext();
-    });
-
-  });
-
-});
+    return src;
+  }
+}
 
 
+exports.Rule = Rule;
