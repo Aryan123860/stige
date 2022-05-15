@@ -1,59 +1,97 @@
-// TypeScript Version: 3.0
-/// <reference types="node" />
+// Type definitions for Chalk
+// Definitions by: Thomas Sauer <https://github.com/t-sauer>
 
-export interface DotenvParseOptions {
-  /**
-   * You may turn on logging to help debug why certain keys or values are not being set as you expect.
-   */
-  debug?: boolean;
+export const enum Level {
+	None = 0,
+	Basic = 1,
+	Ansi256 = 2,
+	TrueColor = 3
 }
 
-export interface DotenvParseOutput {
-  [name: string]: string;
+export interface ChalkOptions {
+	enabled?: boolean;
+	level?: Level;
 }
 
-/**
- * Parses a string or buffer in the .env file format into an object.
- *
- * @param src - contents to be parsed
- * @param options - additional options
- * @returns an object with keys and values based on `src`
- */
-export function parse<T extends DotenvParseOutput = DotenvParseOutput>(
-  src: string | Buffer,
-  options?: DotenvParseOptions
-): T;
-
-export interface DotenvConfigOptions {
-  /**
-   * You may specify a custom path if your file containing environment variables is located elsewhere.
-   */
-  path?: string;
-
-  /**
-   * You may specify the encoding of your file containing environment variables.
-   */
-  encoding?: string;
-
-  /**
-   * You may turn on logging to help debug why certain keys or values are not being set as you expect.
-   */
-  debug?: boolean;
+export interface ChalkConstructor {
+	new (options?: ChalkOptions): Chalk;
+	(options?: ChalkOptions): Chalk;
 }
 
-export interface DotenvConfigOutput {
-  error?: Error;
-  parsed?: DotenvParseOutput;
+export interface ColorSupport {
+	level: Level;
+	hasBasic: boolean;
+	has256: boolean;
+	has16m: boolean;
 }
 
-/**
- * Loads `.env` file contents into {@link https://nodejs.org/api/process.html#process_process_env `process.env`}.
- * Example: 'KEY=value' becomes { parsed: { KEY: 'value' } }
- *
- * @param options - controls behavior
- * @returns an object with a `parsed` key if successful or `error` key if an error occurred
- *
- */
-export function config(options?: DotenvConfigOptions): DotenvConfigOutput;
-/** @deprecated since v7.0.0 Use config instead. */
-export const load: typeof config;
+export interface Chalk {
+	(...text: string[]): string;
+	(text: TemplateStringsArray, ...placeholders: string[]): string;
+	constructor: ChalkConstructor;
+	enabled: boolean;
+	level: Level;
+	rgb(r: number, g: number, b: number): this;
+	hsl(h: number, s: number, l: number): this;
+	hsv(h: number, s: number, v: number): this;
+	hwb(h: number, w: number, b: number): this;
+	bgHex(color: string): this;
+	bgKeyword(color: string): this;
+	bgRgb(r: number, g: number, b: number): this;
+	bgHsl(h: number, s: number, l: number): this;
+	bgHsv(h: number, s: number, v: number): this;
+	bgHwb(h: number, w: number, b: number): this;
+	hex(color: string): this;
+	keyword(color: string): this;
+
+	readonly reset: this;
+	readonly bold: this;
+	readonly dim: this;
+	readonly italic: this;
+	readonly underline: this;
+	readonly inverse: this;
+	readonly hidden: this;
+	readonly strikethrough: this;
+
+	readonly visible: this;
+
+	readonly black: this;
+	readonly red: this;
+	readonly green: this;
+	readonly yellow: this;
+	readonly blue: this;
+	readonly magenta: this;
+	readonly cyan: this;
+	readonly white: this;
+	readonly gray: this;
+	readonly grey: this;
+	readonly blackBright: this;
+	readonly redBright: this;
+	readonly greenBright: this;
+	readonly yellowBright: this;
+	readonly blueBright: this;
+	readonly magentaBright: this;
+	readonly cyanBright: this;
+	readonly whiteBright: this;
+
+	readonly bgBlack: this;
+	readonly bgRed: this;
+	readonly bgGreen: this;
+	readonly bgYellow: this;
+	readonly bgBlue: this;
+	readonly bgMagenta: this;
+	readonly bgCyan: this;
+	readonly bgWhite: this;
+	readonly bgBlackBright: this;
+	readonly bgRedBright: this;
+	readonly bgGreenBright: this;
+	readonly bgYellowBright: this;
+	readonly bgBlueBright: this;
+	readonly bgMagentaBright: this;
+	readonly bgCyanBright: this;
+	readonly bgWhiteBright: this;
+}
+
+declare const chalk: Chalk & { supportsColor: ColorSupport };
+
+export default chalk
