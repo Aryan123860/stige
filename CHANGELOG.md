@@ -1,256 +1,272 @@
-## **6.7.0**
-- [New] `stringify`/`parse`: add `comma` as an `arrayFormat` option (#276, #219)
-- [Fix] correctly parse nested arrays (#212)
-- [Fix] `utils.merge`: avoid a crash with a null target and a truthy non-array source, also with an array source
-- [Robustness] `stringify`: cache `Object.prototype.hasOwnProperty`
-- [Refactor] `utils`: `isBuffer`: small tweak; add tests
-- [Refactor] use cached `Array.isArray`
-- [Refactor] `parse`/`stringify`: make a function to normalize the options
-- [Refactor] `utils`: reduce observable [[Get]]s
-- [Refactor] `stringify`/`utils`: cache `Array.isArray`
-- [Tests] always use `String(x)` over `x.toString()`
-- [Tests] fix Buffer tests to work in node < 4.5 and node < 5.10
-- [Tests] temporarily allow coverage to fail
 
-## **6.6.0**
-- [New] Add support for iso-8859-1, utf8 "sentinel" and numeric entities (#268)
-- [New] move two-value combine to a `utils` function (#189)
-- [Fix] `stringify`: fix a crash with `strictNullHandling` and a custom `filter`/`serializeDate` (#279)
-- [Fix] when `parseArrays` is false, properly handle keys ending in `[]` (#260)
-- [Fix] `stringify`: do not crash in an obscure combo of `interpretNumericEntities`, a bad custom `decoder`, & `iso-8859-1`
-- [Fix] `utils`: `merge`: fix crash when `source` is a truthy primitive & no options are provided
-- [refactor] `stringify`: Avoid arr = arr.concat(...), push to the existing instance (#269)
-- [Refactor] `parse`: only need to reassign the var once
-- [Refactor] `parse`/`stringify`: clean up `charset` options checking; fix defaults
-- [Refactor] add missing defaults
-- [Refactor] `parse`: one less `concat` call
-- [Refactor] `utils`: `compactQueue`: make it explicitly side-effecting
-- [Dev Deps] update `browserify`, `eslint`, `@ljharb/eslint-config`, `iconv-lite`, `safe-publish-latest`, `tape`
-- [Tests] up to `node` `v10.10`, `v9.11`, `v8.12`, `v6.14`, `v4.9`; pin included builds to LTS
+Changelog
+=========
 
-## **6.5.2**
-- [Fix] use `safer-buffer` instead of `Buffer` constructor
-- [Refactor] utils: `module.exports` one thing, instead of mutating `exports` (#230)
-- [Dev Deps] update `browserify`, `eslint`, `iconv-lite`, `safer-buffer`, `tape`, `browserify`
 
-## **6.5.1**
-- [Fix] Fix parsing & compacting very deep objects (#224)
-- [Refactor] name utils functions
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `tape`
-- [Tests] up to `node` `v8.4`; use `nvm install-latest-npm` so newer npm doesn’t break older node
-- [Tests] Use precise dist for Node.js 0.6 runtime (#225)
-- [Tests] make 0.6 required, now that it’s passing
-- [Tests] on `node` `v8.2`; fix npm on node 0.6
+# 2.x release
 
-## **6.5.0**
-- [New] add `utils.assign`
-- [New] pass default encoder/decoder to custom encoder/decoder functions (#206)
-- [New] `parse`/`stringify`: add `ignoreQueryPrefix`/`addQueryPrefix` options, respectively (#213)
-- [Fix] Handle stringifying empty objects with addQueryPrefix (#217)
-- [Fix] do not mutate `options` argument (#207)
-- [Refactor] `parse`: cache index to reuse in else statement (#182)
-- [Docs] add various badges to readme (#208)
-- [Dev Deps] update `eslint`, `browserify`, `iconv-lite`, `tape`
-- [Tests] up to `node` `v8.1`, `v7.10`, `v6.11`; npm v4.6 breaks on node < v1; npm v5+ breaks on node < v4
-- [Tests] add `editorconfig-tools`
+## v2.6.1
 
-## **6.4.0**
-- [New] `qs.stringify`: add `encodeValuesOnly` option
-- [Fix] follow `allowPrototypes` option during merge (#201, #201)
-- [Fix] support keys starting with brackets (#202, #200)
-- [Fix] chmod a-x
-- [Dev Deps] update `eslint`
-- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
-- [eslint] reduce warnings
+**This is an important security release. It is strongly recommended to update as soon as possible.**
 
-## **6.3.2**
-- [Fix] follow `allowPrototypes` option during merge (#201, #200)
-- [Dev Deps] update `eslint`
-- [Fix] chmod a-x
-- [Fix] support keys starting with brackets (#202, #200)
-- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+- Fix: honor the `size` option after following a redirect.
 
-## **6.3.1**
-- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties (thanks, @snyk!)
-- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `browserify`, `iconv-lite`, `qs-iconv`, `tape`
-- [Tests] on all node minors; improve test matrix
-- [Docs] document stringify option `allowDots` (#195)
-- [Docs] add empty object and array values example (#195)
-- [Docs] Fix minor inconsistency/typo (#192)
-- [Docs] document stringify option `sort` (#191)
-- [Refactor] `stringify`: throw faster with an invalid encoder
-- [Refactor] remove unnecessary escapes (#184)
-- Remove contributing.md, since `qs` is no longer part of `hapi` (#183)
+## v2.6.0
 
-## **6.3.0**
-- [New] Add support for RFC 1738 (#174, #173)
-- [New] `stringify`: Add `serializeDate` option to customize Date serialization (#159)
-- [Fix] ensure `utils.merge` handles merging two arrays
-- [Refactor] only constructors should be capitalized
-- [Refactor] capitalized var names are for constructors only
-- [Refactor] avoid using a sparse array
-- [Robustness] `formats`: cache `String#replace`
-- [Dev Deps] update `browserify`, `eslint`, `@ljharb/eslint-config`; add `safe-publish-latest`
-- [Tests] up to `node` `v6.8`, `v4.6`; improve test matrix
-- [Tests] flesh out arrayLimit/arrayFormat tests (#107)
-- [Tests] skip Object.create tests when null objects are not available
-- [Tests] Turn on eslint for test files (#175)
+- Enhance: `options.agent`, it now accepts a function that returns custom http(s).Agent instance based on current URL, see readme for more information.
+- Fix: incorrect `Content-Length` was returned for stream body in 2.5.0 release; note that `node-fetch` doesn't calculate content length for stream body.
+- Fix: `Response.url` should return empty string instead of `null` by default.
 
-## **6.2.3**
-- [Fix] follow `allowPrototypes` option during merge (#201, #200)
-- [Fix] chmod a-x
-- [Fix] support keys starting with brackets (#202, #200)
-- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+## v2.5.0
 
-## **6.2.2**
-- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+- Enhance: `Response` object now includes `redirected` property.
+- Enhance: `fetch()` now accepts third-party `Blob` implementation as body.
+- Other: disable `package-lock.json` generation as we never commit them.
+- Other: dev dependency update.
+- Other: readme update.
 
-## **6.2.1**
-- [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
-- [Refactor] Be explicit and use `Object.prototype.hasOwnProperty.call`
-- [Tests] remove `parallelshell` since it does not reliably report failures
-- [Tests] up to `node` `v6.3`, `v5.12`
-- [Dev Deps] update `tape`, `eslint`, `@ljharb/eslint-config`, `qs-iconv`
+## v2.4.1
 
-## [**6.2.0**](https://github.com/ljharb/qs/issues?milestone=36&state=closed)
-- [New] pass Buffers to the encoder/decoder directly (#161)
-- [New] add "encoder" and "decoder" options, for custom param encoding/decoding (#160)
-- [Fix] fix compacting of nested sparse arrays (#150)
+- Fix: `Blob` import rule for node < 10, as `Readable` isn't a named export.
 
-## **6.1.2
-- [Fix] follow `allowPrototypes` option during merge (#201, #200)
-- [Fix] chmod a-x
-- [Fix] support keys starting with brackets (#202, #200)
-- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+## v2.4.0
 
-## **6.1.1**
-- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
+- Enhance: added `Brotli` compression support (using node's zlib).
+- Enhance: updated `Blob` implementation per spec.
+- Fix: set content type automatically for `URLSearchParams`.
+- Fix: `Headers` now reject empty header names.
+- Fix: test cases, as node 12+ no longer accepts invalid header response.
 
-## [**6.1.0**](https://github.com/ljharb/qs/issues?milestone=35&state=closed)
-- [New] allowDots option for `stringify` (#151)
-- [Fix] "sort" option should work at a depth of 3 or more (#151)
-- [Fix] Restore `dist` directory; will be removed in v7 (#148)
+## v2.3.0
 
-## **6.0.4**
-- [Fix] follow `allowPrototypes` option during merge (#201, #200)
-- [Fix] chmod a-x
-- [Fix] support keys starting with brackets (#202, #200)
-- [Tests] up to `node` `v7.7`, `v6.10`,` v4.8`; disable osx builds since they block linux builds
+- Enhance: added `AbortSignal` support, with README example.
+- Enhance: handle invalid `Location` header during redirect by rejecting them explicitly with `FetchError`.
+- Fix: update `browser.js` to support react-native environment, where `self` isn't available globally.
 
-## **6.0.3**
-- [Fix] ensure that `allowPrototypes: false` does not ever shadow Object.prototype properties
-- [Fix] Restore `dist` directory; will be removed in v7 (#148)
+## v2.2.1
 
-## [**6.0.2**](https://github.com/ljharb/qs/issues?milestone=33&state=closed)
-- Revert ES6 requirement and restore support for node down to v0.8.
+- Fix: `compress` flag shouldn't overwrite existing `Accept-Encoding` header.
+- Fix: multiple `import` rules, where `PassThrough` etc. doesn't have a named export when using node <10 and `--exerimental-modules` flag.
+- Other: Better README.
 
-## [**6.0.1**](https://github.com/ljharb/qs/issues?milestone=32&state=closed)
-- [**#127**](https://github.com/ljharb/qs/pull/127) Fix engines definition in package.json
+## v2.2.0
 
-## [**6.0.0**](https://github.com/ljharb/qs/issues?milestone=31&state=closed)
-- [**#124**](https://github.com/ljharb/qs/issues/124) Use ES6 and drop support for node < v4
+- Enhance: Support all `ArrayBuffer` view types
+- Enhance: Support Web Workers
+- Enhance: Support Node.js' `--experimental-modules` mode; deprecate `.es.js` file
+- Fix: Add `__esModule` property to the exports object
+- Other: Better example in README for writing response to a file
+- Other: More tests for Agent
 
-## **5.2.1**
-- [Fix] ensure `key[]=x&key[]&key[]=y` results in 3, not 2, values
+## v2.1.2
 
-## [**5.2.0**](https://github.com/ljharb/qs/issues?milestone=30&state=closed)
-- [**#64**](https://github.com/ljharb/qs/issues/64) Add option to sort object keys in the query string
+- Fix: allow `Body` methods to work on `ArrayBuffer`-backed `Body` objects
+- Fix: reject promise returned by `Body` methods when the accumulated `Buffer` exceeds the maximum size
+- Fix: support custom `Host` headers with any casing
+- Fix: support importing `fetch()` from TypeScript in `browser.js`
+- Fix: handle the redirect response body properly
 
-## [**5.1.0**](https://github.com/ljharb/qs/issues?milestone=29&state=closed)
-- [**#117**](https://github.com/ljharb/qs/issues/117) make URI encoding stringified results optional
-- [**#106**](https://github.com/ljharb/qs/issues/106) Add flag `skipNulls` to optionally skip null values in stringify
+## v2.1.1
 
-## [**5.0.0**](https://github.com/ljharb/qs/issues?milestone=28&state=closed)
-- [**#114**](https://github.com/ljharb/qs/issues/114) default allowDots to false
-- [**#100**](https://github.com/ljharb/qs/issues/100) include dist to npm
+Fix packaging errors in v2.1.0.
 
-## [**4.0.0**](https://github.com/ljharb/qs/issues?milestone=26&state=closed)
-- [**#98**](https://github.com/ljharb/qs/issues/98) make returning plain objects and allowing prototype overwriting properties optional
+## v2.1.0
 
-## [**3.1.0**](https://github.com/ljharb/qs/issues?milestone=24&state=closed)
-- [**#89**](https://github.com/ljharb/qs/issues/89) Add option to disable "Transform dot notation to bracket notation"
+- Enhance: allow using ArrayBuffer as the `body` of a `fetch()` or `Request`
+- Fix: store HTTP headers of a `Headers` object internally with the given case, for compatibility with older servers that incorrectly treated header names in a case-sensitive manner
+- Fix: silently ignore invalid HTTP headers
+- Fix: handle HTTP redirect responses without a `Location` header just like non-redirect responses
+- Fix: include bodies when following a redirection when appropriate
 
-## [**3.0.0**](https://github.com/ljharb/qs/issues?milestone=23&state=closed)
-- [**#80**](https://github.com/ljharb/qs/issues/80) qs.parse silently drops properties
-- [**#77**](https://github.com/ljharb/qs/issues/77) Perf boost
-- [**#60**](https://github.com/ljharb/qs/issues/60) Add explicit option to disable array parsing
-- [**#74**](https://github.com/ljharb/qs/issues/74) Bad parse when turning array into object
-- [**#81**](https://github.com/ljharb/qs/issues/81) Add a `filter` option
-- [**#68**](https://github.com/ljharb/qs/issues/68) Fixed issue with recursion and passing strings into objects.
-- [**#66**](https://github.com/ljharb/qs/issues/66) Add mixed array and object dot notation support Closes: #47
-- [**#76**](https://github.com/ljharb/qs/issues/76) RFC 3986
-- [**#85**](https://github.com/ljharb/qs/issues/85) No equal sign
-- [**#84**](https://github.com/ljharb/qs/issues/84) update license attribute
+## v2.0.0
 
-## [**2.4.1**](https://github.com/ljharb/qs/issues?milestone=20&state=closed)
-- [**#73**](https://github.com/ljharb/qs/issues/73) Property 'hasOwnProperty' of object #<Object> is not a function
+This is a major release. Check [our upgrade guide](https://github.com/bitinn/node-fetch/blob/master/UPGRADE-GUIDE.md) for an overview on some key differences between v1 and v2.
 
-## [**2.4.0**](https://github.com/ljharb/qs/issues?milestone=19&state=closed)
-- [**#70**](https://github.com/ljharb/qs/issues/70) Add arrayFormat option
+### General changes
 
-## [**2.3.3**](https://github.com/ljharb/qs/issues?milestone=18&state=closed)
-- [**#59**](https://github.com/ljharb/qs/issues/59) make sure array indexes are >= 0, closes #57
-- [**#58**](https://github.com/ljharb/qs/issues/58) make qs usable for browser loader
+- Major: Node.js 0.10.x and 0.12.x support is dropped
+- Major: `require('node-fetch/lib/response')` etc. is now unsupported; use `require('node-fetch').Response` or ES6 module imports
+- Enhance: start testing on Node.js v4.x, v6.x, v8.x LTS, as well as v9.x stable
+- Enhance: use Rollup to produce a distributed bundle (less memory overhead and faster startup)
+- Enhance: make `Object.prototype.toString()` on Headers, Requests, and Responses return correct class strings
+- Other: rewrite in ES2015 using Babel
+- Other: use Codecov for code coverage tracking
+- Other: update package.json script for npm 5
+- Other: `encoding` module is now optional (alpha.7)
+- Other: expose browser.js through package.json, avoid bundling mishaps (alpha.9)
+- Other: allow TypeScript to `import` node-fetch by exposing default (alpha.9)
 
-## [**2.3.2**](https://github.com/ljharb/qs/issues?milestone=17&state=closed)
-- [**#55**](https://github.com/ljharb/qs/issues/55) allow merging a string into an object
+### HTTP requests
 
-## [**2.3.1**](https://github.com/ljharb/qs/issues?milestone=16&state=closed)
-- [**#52**](https://github.com/ljharb/qs/issues/52) Return "undefined" and "false" instead of throwing "TypeError".
+- Major: overwrite user's `Content-Length` if we can be sure our information is correct (per spec)
+- Fix: errors in a response are caught before the body is accessed
+- Fix: support WHATWG URL objects, created by `whatwg-url` package or `require('url').URL` in Node.js 7+
 
-## [**2.3.0**](https://github.com/ljharb/qs/issues?milestone=15&state=closed)
-- [**#50**](https://github.com/ljharb/qs/issues/50) add option to omit array indices, closes #46
+### Response and Request classes
 
-## [**2.2.5**](https://github.com/ljharb/qs/issues?milestone=14&state=closed)
-- [**#39**](https://github.com/ljharb/qs/issues/39) Is there an alternative to Buffer.isBuffer?
-- [**#49**](https://github.com/ljharb/qs/issues/49) refactor utils.merge, fixes #45
-- [**#41**](https://github.com/ljharb/qs/issues/41) avoid browserifying Buffer, for #39
+- Major: `response.text()` no longer attempts to detect encoding, instead always opting for UTF-8 (per spec); use `response.textConverted()` for the v1 behavior
+- Major: make `response.json()` throw error instead of returning an empty object on 204 no-content respose (per spec; reverts behavior changed in v1.6.2)
+- Major: internal methods are no longer exposed
+- Major: throw error when a `GET` or `HEAD` Request is constructed with a non-null body (per spec)
+- Enhance: add `response.arrayBuffer()` (also applies to Requests)
+- Enhance: add experimental `response.blob()` (also applies to Requests)
+- Enhance: `URLSearchParams` is now accepted as a body
+- Enhance: wrap `response.json()` json parsing error as `FetchError`
+- Fix: fix Request and Response with `null` body
 
-## [**2.2.4**](https://github.com/ljharb/qs/issues?milestone=13&state=closed)
-- [**#38**](https://github.com/ljharb/qs/issues/38) how to handle object keys beginning with a number
+### Headers class
 
-## [**2.2.3**](https://github.com/ljharb/qs/issues?milestone=12&state=closed)
-- [**#37**](https://github.com/ljharb/qs/issues/37) parser discards first empty value in array
-- [**#36**](https://github.com/ljharb/qs/issues/36) Update to lab 4.x
+- Major: remove `headers.getAll()`; make `get()` return all headers delimited by commas (per spec)
+- Enhance: make Headers iterable
+- Enhance: make Headers constructor accept an array of tuples
+- Enhance: make sure header names and values are valid in HTTP
+- Fix: coerce Headers prototype function parameters to strings, where applicable
 
-## [**2.2.2**](https://github.com/ljharb/qs/issues?milestone=11&state=closed)
-- [**#33**](https://github.com/ljharb/qs/issues/33) Error when plain object in a value
-- [**#34**](https://github.com/ljharb/qs/issues/34) use Object.prototype.hasOwnProperty.call instead of obj.hasOwnProperty
-- [**#24**](https://github.com/ljharb/qs/issues/24) Changelog? Semver?
+### Documentation
 
-## [**2.2.1**](https://github.com/ljharb/qs/issues?milestone=10&state=closed)
-- [**#32**](https://github.com/ljharb/qs/issues/32) account for circular references properly, closes #31
-- [**#31**](https://github.com/ljharb/qs/issues/31) qs.parse stackoverflow on circular objects
+- Enhance: more comprehensive API docs
+- Enhance: add a list of default headers in README
 
-## [**2.2.0**](https://github.com/ljharb/qs/issues?milestone=9&state=closed)
-- [**#26**](https://github.com/ljharb/qs/issues/26) Don't use Buffer global if it's not present
-- [**#30**](https://github.com/ljharb/qs/issues/30) Bug when merging non-object values into arrays
-- [**#29**](https://github.com/ljharb/qs/issues/29) Don't call Utils.clone at the top of Utils.merge
-- [**#23**](https://github.com/ljharb/qs/issues/23) Ability to not limit parameters?
 
-## [**2.1.0**](https://github.com/ljharb/qs/issues?milestone=8&state=closed)
-- [**#22**](https://github.com/ljharb/qs/issues/22) Enable using a RegExp as delimiter
+# 1.x release
 
-## [**2.0.0**](https://github.com/ljharb/qs/issues?milestone=7&state=closed)
-- [**#18**](https://github.com/ljharb/qs/issues/18) Why is there arrayLimit?
-- [**#20**](https://github.com/ljharb/qs/issues/20) Configurable parametersLimit
-- [**#21**](https://github.com/ljharb/qs/issues/21) make all limits optional, for #18, for #20
+## backport releases (v1.7.0 and beyond)
 
-## [**1.2.2**](https://github.com/ljharb/qs/issues?milestone=6&state=closed)
-- [**#19**](https://github.com/ljharb/qs/issues/19) Don't overwrite null values
+See [changelog on 1.x branch](https://github.com/bitinn/node-fetch/blob/1.x/CHANGELOG.md) for details.
 
-## [**1.2.1**](https://github.com/ljharb/qs/issues?milestone=5&state=closed)
-- [**#16**](https://github.com/ljharb/qs/issues/16) ignore non-string delimiters
-- [**#15**](https://github.com/ljharb/qs/issues/15) Close code block
+## v1.6.3
 
-## [**1.2.0**](https://github.com/ljharb/qs/issues?milestone=4&state=closed)
-- [**#12**](https://github.com/ljharb/qs/issues/12) Add optional delim argument
-- [**#13**](https://github.com/ljharb/qs/issues/13) fix #11: flattened keys in array are now correctly parsed
+- Enhance: error handling document to explain `FetchError` design
+- Fix: support `form-data` 2.x releases (requires `form-data` >= 2.1.0)
 
-## [**1.1.0**](https://github.com/ljharb/qs/issues?milestone=3&state=closed)
-- [**#7**](https://github.com/ljharb/qs/issues/7) Empty values of a POST array disappear after being submitted
-- [**#9**](https://github.com/ljharb/qs/issues/9) Should not omit equals signs (=) when value is null
-- [**#6**](https://github.com/ljharb/qs/issues/6) Minor grammar fix in README
+## v1.6.2
 
-## [**1.0.2**](https://github.com/ljharb/qs/issues?milestone=2&state=closed)
-- [**#5**](https://github.com/ljharb/qs/issues/5) array holes incorrectly copied into object on large index
+- Enhance: minor document update
+- Fix: response.json() returns empty object on 204 no-content response instead of throwing a syntax error
+
+## v1.6.1
+
+- Fix: if `res.body` is a non-stream non-formdata object, we will call `body.toString` and send it as a string
+- Fix: `counter` value is incorrectly set to `follow` value when wrapping Request instance
+- Fix: documentation update
+
+## v1.6.0
+
+- Enhance: added `res.buffer()` api for convenience, it returns body as a Node.js buffer
+- Enhance: better old server support by handling raw deflate response
+- Enhance: skip encoding detection for non-HTML/XML response
+- Enhance: minor document update
+- Fix: HEAD request doesn't need decompression, as body is empty
+- Fix: `req.body` now accepts a Node.js buffer
+
+## v1.5.3
+
+- Fix: handle 204 and 304 responses when body is empty but content-encoding is gzip/deflate
+- Fix: allow resolving response and cloned response in any order
+- Fix: avoid setting `content-length` when `form-data` body use streams
+- Fix: send DELETE request with content-length when body is present
+- Fix: allow any url when calling new Request, but still reject non-http(s) url in fetch
+
+## v1.5.2
+
+- Fix: allow node.js core to handle keep-alive connection pool when passing a custom agent
+
+## v1.5.1
+
+- Fix: redirect mode `manual` should work even when there is no redirection or broken redirection
+
+## v1.5.0
+
+- Enhance: rejected promise now use custom `Error` (thx to @pekeler)
+- Enhance: `FetchError` contains `err.type` and `err.code`, allows for better error handling (thx to @pekeler)
+- Enhance: basic support for redirect mode `manual` and `error`, allows for location header extraction (thx to @jimmywarting for the initial PR)
+
+## v1.4.1
+
+- Fix: wrapping Request instance with FormData body again should preserve the body as-is
+
+## v1.4.0
+
+- Enhance: Request and Response now have `clone` method (thx to @kirill-konshin for the initial PR)
+- Enhance: Request and Response now have proper string and buffer body support (thx to @kirill-konshin)
+- Enhance: Body constructor has been refactored out (thx to @kirill-konshin)
+- Enhance: Headers now has `forEach` method (thx to @tricoder42)
+- Enhance: back to 100% code coverage
+- Fix: better form-data support (thx to @item4)
+- Fix: better character encoding detection under chunked encoding (thx to @dsuket for the initial PR)
+
+## v1.3.3
+
+- Fix: make sure `Content-Length` header is set when body is string for POST/PUT/PATCH requests
+- Fix: handle body stream error, for cases such as incorrect `Content-Encoding` header
+- Fix: when following certain redirects, use `GET` on subsequent request per Fetch Spec
+- Fix: `Request` and `Response` constructors now parse headers input using `Headers`
+
+## v1.3.2
+
+- Enhance: allow auto detect of form-data input (no `FormData` spec on node.js, this is form-data specific feature)
+
+## v1.3.1
+
+- Enhance: allow custom host header to be set (server-side only feature, as it's a forbidden header on client-side)
+
+## v1.3.0
+
+- Enhance: now `fetch.Request` is exposed as well
+
+## v1.2.1
+
+- Enhance: `Headers` now normalized `Number` value to `String`, prevent common mistakes
+
+## v1.2.0
+
+- Enhance: now fetch.Headers and fetch.Response are exposed, making testing easier
+
+## v1.1.2
+
+- Fix: `Headers` should only support `String` and `Array` properties, and ignore others
+
+## v1.1.1
+
+- Enhance: now req.headers accept both plain object and `Headers` instance
+
+## v1.1.0
+
+- Enhance: timeout now also applies to response body (in case of slow response)
+- Fix: timeout is now cleared properly when fetch is done/has failed
+
+## v1.0.6
+
+- Fix: less greedy content-type charset matching
+
+## v1.0.5
+
+- Fix: when `follow = 0`, fetch should not follow redirect
+- Enhance: update tests for better coverage
+- Enhance: code formatting
+- Enhance: clean up doc
+
+## v1.0.4
+
+- Enhance: test iojs support
+- Enhance: timeout attached to socket event only fire once per redirect
+
+## v1.0.3
+
+- Fix: response size limit should reject large chunk
+- Enhance: added character encoding detection for xml, such as rss/atom feed (encoding in DTD)
+
+## v1.0.2
+
+- Fix: added res.ok per spec change
+
+## v1.0.0
+
+- Enhance: better test coverage and doc
+
+
+# 0.x release
+
+## v0.1
+
+- Major: initial public release
